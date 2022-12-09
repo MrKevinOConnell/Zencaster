@@ -13,7 +13,9 @@ export default function App({ Component, pageProps }: AppProps) {
   .from('mood')
   .select()
   if(!error) {
-    setMood(data[0])
+    if(data[0].color && data[0].description) {
+      setMood(data[0])
+    } 
   }
   }
 const [isPlaying,setIsPlaying] = useState(false)
