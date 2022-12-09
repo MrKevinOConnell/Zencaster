@@ -15,9 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
   if(!error) {
     setMood(data[0])
   }
-  console.log("MOOD",mood)
   }
-  console.log(new Date().getHours())
 const [isPlaying,setIsPlaying] = useState(false)
 useEffect(()=> {
   getMood()
@@ -46,7 +44,7 @@ useEffect(()=> {
         playStatus={isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}/></Grid.Col>
        <Grid.Col  span={8}><Text size="lg" weight={700} align="center" mt={5} >Zencaster</Text></Grid.Col>
       </Grid>
-      <Text align="center">{mood.description}</Text>
+      <Text align="center">The current vibe of Farcaster: {mood.description}</Text>
      
 
       
