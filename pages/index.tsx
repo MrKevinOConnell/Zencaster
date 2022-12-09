@@ -32,8 +32,8 @@ export default function Home() {
   return
   return (
     <Stack justify="center" align="center">
-    {casts && casts.map((cast: any) => {
-      return(<Post cast={cast}/>)
+    {casts && casts.map((cast: any, index: number) => {
+      return(<Post key={index} cast={cast}/>)
     })}
 
      
