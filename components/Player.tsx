@@ -3,9 +3,11 @@ import { getResizedArtworkUrl, useAllTracksQuery } from "@spinamp/spinamp-hooks"
 import { useState,useEffect } from "react"
 import ReactAudioPlayer from 'react-audio-player';
 import { IconMenu2 } from '@tabler/icons';
+import supabase from "../lib/db";
 export const Player = () => {
     const {tracks, isLoading, isError, refetch} = useAllTracksQuery();
     const [showQueue,setShowQueue] = useState(false)
+    
     const [currentWindow,setWindow] = useState(null as any)
     const [index,setIndex] = useState(0)
     console.log("tracks",tracks)
@@ -19,6 +21,16 @@ export const Player = () => {
         <LoadingOverlay visible={true} overlayBlur={2} />
         )
     }
+
+    useEffect(()=> {
+        const channel = supabase.channel('schema-db-changes')
+        .on('broadcast', { event: 'found-music' }, async (payload) => {
+          await refetch
+        })
+        channel.subscribe((msg) => {
+          console.log("MSG",msg)
+        })
+      },[])
 
  
  
@@ -54,6 +66,7 @@ export const Player = () => {
         {tracks.slice(index + 1).map((track,trackIndex) => {
             return(
             <List.Item
+            key={trackIndex}
             onClick={() => {
                 setIndex(index + 1 + trackIndex)
             }}
