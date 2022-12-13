@@ -11,6 +11,15 @@ export const Player = () => {
     const [currentWindow,setWindow] = useState(null as any)
     const [index,setIndex] = useState(0)
     console.log("tracks",tracks)
+    useEffect(()=> {
+        const channel = supabase.channel('schema-db-changes')
+        .on('broadcast', { event: 'found-music' }, async (payload) => {
+          await refetch
+        })
+        channel.subscribe((msg) => {
+          console.log("MSG",msg)
+        })
+      },[])
     useEffect(() => {
         if(window) {
         setWindow(window)
@@ -22,15 +31,6 @@ export const Player = () => {
         )
     }
 
-    useEffect(()=> {
-        const channel = supabase.channel('schema-db-changes')
-        .on('broadcast', { event: 'found-music' }, async (payload) => {
-          await refetch
-        })
-        channel.subscribe((msg) => {
-          console.log("MSG",msg)
-        })
-      },[])
 
  
  
