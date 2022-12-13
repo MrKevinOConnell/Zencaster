@@ -10,10 +10,10 @@ import supabase from "../lib/db";
   
 export const Player = () => {
     const defaultFilter = { filter: {websiteUrl: { notIn: [], }}, first: 10}
-   
     const [filter,setFilter] = useState(defaultFilter as any)
     const {tracks, isLoading, isError, refetch} = useAllTracksQuery(filter);
     const [trackUsers,setTrackUsers] = useState(null as any)
+   
     const getUrls = async () => {
         const {data,error} = await supabase
         .from('casts')
@@ -32,7 +32,7 @@ export const Player = () => {
             return {url: url, user: cast.username}})
             console.log("tracks",tracks)
         if(tracks && tracks.length) {
-            setFilter({filter: {websiteUrl: { in: tracks.map((track) => track.url)}}})
+            setFilter({filter: {websiteUrl: { in: tracks.map((track) => track.url,)}}})
             setTrackUsers(tracks)
         }
     }
@@ -55,7 +55,6 @@ export const Player = () => {
         }
             },[])
     if(isLoading || !tracks || !tracks[index]) {
-        console.log("TRACKS",tracks)
         return(
             <Dialog opened={true} style={{position: "relative"}}>
         <Center><LoadingOverlay visible={true} overlayBlur={1} /> </Center>
@@ -91,7 +90,12 @@ export const Player = () => {
     autoPlay
     src={tracks[index].lossyAudioUrl}
         onEnded={()=> {
-            setIndex(index + 1)
+            if(index === tracks.length -1 ) {
+                setIndex(0)
+            }
+            else {
+                setIndex(index + 1)
+            }
         }}
   />
 </Center>
