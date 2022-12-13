@@ -57,7 +57,9 @@ export const Player = () => {
     if(isLoading || !tracks || !tracks[index]) {
         console.log("TRACKS",tracks)
         return(
-        <LoadingOverlay visible={true} overlayBlur={1} />
+            <Dialog opened={true} style={{position: "relative"}}>
+        <Center><LoadingOverlay visible={true} overlayBlur={1} /> </Center>
+        </Dialog>
         )
     }
     
