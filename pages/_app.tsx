@@ -20,7 +20,6 @@ export default function App({ Component, pageProps }: AppProps) {
     } 
   }
   }
-const [isPlaying,setIsPlaying] = useState(false)
 useEffect(()=> {
   getMood()
   const channel = supabase.channel('schema-db-changes')

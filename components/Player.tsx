@@ -5,41 +5,67 @@ import 'react-h5-audio-player/lib/styles.css';
 import AudioPlayer from 'react-h5-audio-player';
 import { IconMenu2 } from '@tabler/icons';
 import supabase from "../lib/db";
+
+
+  
 export const Player = () => {
-    const {tracks, isLoading, isError, refetch} = useAllTracksQuery();
+    const defaultFilter = { filter: {websiteUrl: { notIn: [], }}, first: 10}
+   
+    const [filter,setFilter] = useState(defaultFilter as any)
+    const {tracks, isLoading, isError, refetch} = useAllTracksQuery(filter);
+    const [trackUsers,setTrackUsers] = useState(null as any)
+    const getUrls = async () => {
+        const {data,error} = await supabase
+        .from('casts')
+        .select()
+        .or('text.ilike.%https://www.sound.xyz/%,text.ilike.%https://www.ninaprotocol.com/%')
+        .eq('deleted', false)
+        .eq('recast',false)
+        .order('published_at', { ascending: false })
+        let tracks = data.map(cast => {
+            const imgurUrl = 'https://i.imgur.com/'
+            let url = cast.text
+            if(url.includes(imgurUrl)) {
+                url = url.split(imgurUrl)[0]
+            }
+            url = url.match(/\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g)[0]
+            return {url: url, user: cast.username}})
+            console.log("tracks",tracks)
+        if(tracks && tracks.length) {
+            setFilter({filter: {websiteUrl: { in: tracks.map((track) => track.url)}}})
+            setTrackUsers(tracks)
+        }
+    }
+    
+    useEffect(()=> {
+        getUrls()
+    },[])
+
+    useEffect(() => {
+        refetch()
+    },[filter])
+
     const [showQueue,setShowQueue] = useState(false)
     
     const [currentWindow,setWindow] = useState(null as any)
     const [index,setIndex] = useState(0)
-    console.log("tracks",tracks)
-    useEffect(()=> {
-        const channel = supabase.channel('schema-db-changes')
-        .on('broadcast', { event: 'found-music' }, async (payload) => {
-          await refetch
-        })
-        channel.subscribe((msg) => {
-          console.log("MSG",msg)
-        })
-      },[])
     useEffect(() => {
         if(window) {
         setWindow(window)
         }
             },[])
     if(isLoading || !tracks || !tracks[index]) {
+        console.log("TRACKS",tracks)
         return(
-        <LoadingOverlay visible={true} overlayBlur={2} />
+        <LoadingOverlay visible={true} overlayBlur={1} />
         )
     }
-
-
- 
- 
     
     return(
 <Dialog style={{maxHeight: currentWindow ? currentWindow.innerHeight/1.5 : 400}} opened={true}>
     <Center>   <Text weight={700} size="sm">{tracks[index].title}</Text></Center>
-<Center>    <Text size="xs">{tracks[index].artist.name}</Text></Center>
+<Center>    <Text italic size="xs">{tracks[index].artist.name}</Text></Center>
+{trackUsers && trackUsers[index] && <Center><Text size="xs">Casted by @{trackUsers[index].user}</Text> </Center>}
 <Center ><Avatar size={currentWindow ? currentWindow.innerHeight/6: 200} component="a" target="_blank" alt={tracks[index].title} href={tracks[index].websiteUrl} src={tracks[index].lossyArtworkUrl}/></Center>
     <Center my="sm"> <AudioPlayer
     showSkipControls
@@ -55,6 +81,9 @@ export const Player = () => {
     onClickPrevious={() => {
         if(index !== 0) {
             setIndex(index - 1)
+        }
+        else {
+            setIndex(tracks.length - 1)
         }
     }}
     autoPlay
@@ -94,6 +123,7 @@ export const Player = () => {
         }
       >
         <Text size="sm">{`${track.title} - ${track.artist.name}`} </Text>
+    
       </List.Item>)
         })
       
