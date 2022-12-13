@@ -4,8 +4,10 @@ import { Box, Button, MantineProvider, Stack } from '@mantine/core';
 import Sound from 'react-sound';
 import { Card ,Grid,Text} from "@mantine/core"
 import supabase from '../lib/db'
+import {SpinampProvider, useAllTracksQuery} from "@spinamp/spinamp-hooks";
 import { useState,useEffect } from 'react';
-import useSound from 'use-sound';
+import { Player } from '../components/Player';
+
 export default function App({ Component, pageProps }: AppProps) {
   const [mood,setMood] = useState({color: 'white',description: "Figuring out what the mood is 😀"})
   const getMood = async () => {
@@ -37,21 +39,22 @@ useEffect(()=> {
         
         }}
       >
-        <Stack style={{background: mood.color }} justify="center">
+        <SpinampProvider>
+        <Stack style={{background: mood.color, overflowX: "hidden" }} justify="center">
        
 
       
       <Grid>
-        <Grid.Col span={2}> <Button onClick={()=> setIsPlaying(!isPlaying)}>{isPlaying ? "Pause lofi" : "Play lofi"}</Button> <Sound url={'/audio/lofi.mp3'}
-        playStatus={isPlaying ? Sound.status.PLAYING : Sound.status.STOPPED}/></Grid.Col>
-       <Grid.Col  span={8}><Text size="lg" weight={700} align="center" mt={5} >Zencaster</Text></Grid.Col>
+        <Grid.Col span={2}> <Player/>  </Grid.Col>
+       <Grid.Col  span={8}><Text size="lg" weight={700} align="center" mt={5} >Zencaster</Text> <Text align="center">The current vibe of Farcaster: {mood.description}</Text></Grid.Col>
       </Grid>
-      <Text align="center">The current vibe of Farcaster: {mood.description}</Text>
+  
      
 
       
    <Component {...pageProps} />
    </Stack>
+   </SpinampProvider>
   </MantineProvider>
   )
 }
