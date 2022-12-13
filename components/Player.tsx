@@ -1,7 +1,8 @@
 import { Card ,Center,Grid,Text, Button, LoadingOverlay, CardSection, Dialog, Collapse, List, ThemeIcon, Image, Divider, ActionIcon, Avatar} from "@mantine/core"
 import { getResizedArtworkUrl, useAllTracksQuery } from "@spinamp/spinamp-hooks";
 import { useState,useEffect } from "react"
-import ReactAudioPlayer from 'react-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+import AudioPlayer from 'react-h5-audio-player';
 import { IconMenu2 } from '@tabler/icons';
 import supabase from "../lib/db";
 export const Player = () => {
@@ -40,15 +41,29 @@ export const Player = () => {
     <Center>   <Text weight={700} size="sm">{tracks[index].title}</Text></Center>
 <Center>    <Text size="xs">{tracks[index].artist.name}</Text></Center>
 <Center ><Avatar size={currentWindow ? currentWindow.innerHeight/6: 200} component="a" target="_blank" alt={tracks[index].title} href={tracks[index].websiteUrl} src={tracks[index].lossyArtworkUrl}/></Center>
-    <Center my="sm"><ReactAudioPlayer
-    
-  src={tracks[index].lossyAudioUrl}
-  autoPlay
-  controls={true}
-  onEnded={() => {
-    setIndex(index + 1)
-  }}
-/></Center>
+    <Center my="sm"> <AudioPlayer
+    showSkipControls
+    showJumpControls={false}
+    onClickNext={()=> {
+        if(index === tracks.length -1 ) {
+            setIndex(0)
+        }
+        else {
+            setIndex(index + 1)
+        }
+    }}
+    onClickPrevious={() => {
+        if(index !== 0) {
+            setIndex(index - 1)
+        }
+    }}
+    autoPlay
+    src={tracks[index].lossyAudioUrl}
+        onEnded={()=> {
+            setIndex(index + 1)
+        }}
+  />
+</Center>
 <Center>
 <ActionIcon onClick={() => setShowQueue(!showQueue)}>
       <IconMenu2 size={100} />
