@@ -24,6 +24,7 @@ export const Player = () => {
         
         let tracks = !data ? null : data.map(cast => {
             const imgurUrl = 'https://i.imgur.com/'
+            console.log("cast",cast)
             let url = cast.text
             if(url.includes(imgurUrl)) {
                 url = url.split(imgurUrl)[0]
@@ -35,7 +36,7 @@ return null
             else {
                 url = url[0]
             }
-            return {url: url, user: cast.username}}).filter(Boolean)
+            return {url: url, user: cast.author_display_name}}).filter(Boolean)
             
             console.log("tracks",tracks)
         if(tracks && tracks.length) {
