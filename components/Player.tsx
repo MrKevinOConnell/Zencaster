@@ -18,7 +18,7 @@ export const Player = () => {
         const {data,error} = await supabase
         .from('casts')
         .select()
-        .or('text.ilike.%https://www.sound.xyz/%,text.ilike.%https://www.ninaprotocol.com/%')
+        .or('text.like.%https://www.sound.xyz/%,text.like.%https://www.ninaprotocol.com/%')
         .eq('deleted', false)
         .order('published_at', { ascending: false })
         
