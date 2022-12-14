@@ -18,7 +18,7 @@ export const Post = (cast: any) => {
 <Card style={{width: "45%"}} shadow="sm"  p="lg" m="md" radius="md" withBorder>
 <Text mb="md">{text}</Text>
 {postImage && <Center m="md"><img width={240}  src={postImage} alt="post image"/> </Center> }
-<Grid ml={2}> <img style={{borderRadius: "50%"}} width={30} height={30} src={cast.cast.avatar_url} alt={cast.cast.username}/><Text>{cast.cast.username}</Text></Grid>
+<Grid ml={2}> <img style={{borderRadius: "50%"}} width={30} height={30} src={cast.cast.avatar_url} alt={cast.cast.author_display_name}/><Text>@{cast.cast.author_username}</Text></Grid>
 
 </Card>
     )

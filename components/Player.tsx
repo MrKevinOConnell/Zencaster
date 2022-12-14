@@ -36,7 +36,7 @@ return null
             else {
                 url = url[0]
             }
-            return {url: url, user: cast.author_display_name}}).filter(Boolean)
+            return {url: url, user: cast.author_username}}).filter(Boolean)
             
             console.log("tracks",tracks)
         if(tracks && tracks.length) {
