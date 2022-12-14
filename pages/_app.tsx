@@ -34,12 +34,10 @@ useEffect(()=> {
   <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={{
-        
-        }}
+        theme={{ colorScheme: 'dark' }}
       >
         <SpinampProvider>
-        <Stack style={{background: mood.color, overflowX: "hidden" }} justify="center">
+        <Stack style={{ overflowX: "hidden" }} justify="center">
        
 
       
