@@ -10,10 +10,9 @@ export default function Home() {
     const casts = await supabase
   .from('casts')
   .select()
-  .is("reply_parent_merkle_root", null)
+  .is("parent_hash", null)
   .or('text.not.ilike./@([a-zA-Z0-9_]+)/g')
   .eq('deleted', false)
-  .eq('recast',false)
   .order('published_at', { ascending: false })
   setCasts(casts.data)
   }

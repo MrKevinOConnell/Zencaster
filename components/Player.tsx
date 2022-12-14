@@ -20,16 +20,23 @@ export const Player = () => {
         .select()
         .or('text.ilike.%https://www.sound.xyz/%,text.ilike.%https://www.ninaprotocol.com/%')
         .eq('deleted', false)
-        .eq('recast',false)
         .order('published_at', { ascending: false })
-        let tracks = data.map(cast => {
+        
+        let tracks = !data ? null : data.map(cast => {
             const imgurUrl = 'https://i.imgur.com/'
             let url = cast.text
             if(url.includes(imgurUrl)) {
                 url = url.split(imgurUrl)[0]
             }
-            url = url.match(/\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g)[0]
-            return {url: url, user: cast.username}})
+            url = url.match(/\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g)
+            if(!url || !url.length) {
+return null
+            }
+            else {
+                url = url[0]
+            }
+            return {url: url, user: cast.username}}).filter(Boolean)
+            
             console.log("tracks",tracks)
         if(tracks && tracks.length) {
             setFilter({filter: {websiteUrl: { in: tracks.map((track) => track.url,)}}})
@@ -39,6 +46,9 @@ export const Player = () => {
     
     useEffect(()=> {
         getUrls()
+        const channel = supabase.channel('schema-db-changes').on('broadcast', { event: 'casts-update' }, async (payload) => {
+            await getUrls()
+          })
     },[])
 
     useEffect(() => {
@@ -108,7 +118,7 @@ export const Player = () => {
  <Collapse in={showQueue}>
  <Divider my={"md"}/>
  <List
-    style={{maxHeight: currentWindow ? currentWindow.innerHeight/5 : 400, overflowY: "scroll", overflowX:'hidden'}}
+    style={{maxHeight: currentWindow ? currentWindow.innerHeight/6 : 400, overflowY: "scroll", overflowX:'hidden'}}
       type="ordered"
       spacing="sm"
       center
