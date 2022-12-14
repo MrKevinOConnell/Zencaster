@@ -18,18 +18,16 @@ export const Player = () => {
         const {data,error} = await supabase
         .from('casts')
         .select()
-        .or('text.like.%https://www.sound.xyz/%,text.like.%https://www.ninaprotocol.com/%')
+        .or(`text.ilike.%https://www.sound.xyz/%,text.ilike.%https://www.ninaprotocol.com/%`)
         .eq('deleted', false)
         .order('published_at', { ascending: false })
-        
         let tracks = !data ? null : data.map(cast => {
             const imgurUrl = 'https://i.imgur.com/'
-            console.log("cast",cast)
             let url = cast.text
             if(url.includes(imgurUrl)) {
                 url = url.split(imgurUrl)[0]
             }
-            url = url.match(/\b(https?:\/\/.*?\.[a-z]{2,4}\/[^\s]*\b)/g)
+            url = url.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
             if(!url || !url.length) {
 return null
             }
@@ -37,7 +35,7 @@ return null
                 url = url[0]
             }
             return {url: url, user: cast.author_username}}).filter(Boolean)
-            
+            //"https://www.ninaprotocol.com/6PhxD1wfkSX9ar5oMNGKqk1c75KrqDeaxDBCeNpDzauZ"
             console.log("tracks",tracks)
         if(tracks && tracks.length) {
             setFilter({filter: {websiteUrl: { in: tracks.map((track) => track.url,)}}})
@@ -54,6 +52,7 @@ return null
 
     useEffect(() => {
         refetch()
+        
     },[filter])
 
     const [showQueue,setShowQueue] = useState(false)
