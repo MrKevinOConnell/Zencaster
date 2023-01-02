@@ -21,7 +21,7 @@ import { Profile } from '../components/Profile';
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet],
-  [alchemyProvider({ apiKey: 'bLQe7fWCbnw_Ojjyviip3VD80MOmyW-q' }), publicProvider()],
+  [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_SECRET}), publicProvider()],
 )
  
 // Set up client

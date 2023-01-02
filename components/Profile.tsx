@@ -50,9 +50,7 @@ import { Button, Group, UnstyledButton, Avatar, Text,Box} from '@mantine/core';
                 return false
             }
             const data = await response.json();
-              console.log("DDATTA",JSON.stringify(data));
              const hash = internalBase64Encode(data.secret)
-             console.log('keyhash',keyHash)
             localStorage.setItem(keyHash,hash);
            await getUser()
         }
