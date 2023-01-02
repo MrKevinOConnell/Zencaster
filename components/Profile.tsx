@@ -31,9 +31,6 @@ import { Button, Group, UnstyledButton, Avatar, Text,Box} from '@mantine/core';
 
       const getFarcasterToken = async (variables,data) => {
         const address = verifyMessage(variables.message, data);
-        console.log(`message: ${variables.message}`);
-        console.log(`sign address: ${address}`);
-        console.log(`signed payload: ${data}`);
         const signedPayload = data;
         const signature = Buffer.from(arrayify(signedPayload)).toString("base64");
         const selfSignedToken = `eip191:${signature}`;
