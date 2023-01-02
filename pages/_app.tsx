@@ -2,14 +2,52 @@
 import type { AppProps } from 'next/app'
 import { Box, Button, MantineProvider, Stack } from '@mantine/core';
 import Sound from 'react-sound';
-import { Card ,Grid,Text} from "@mantine/core"
+import { Card ,Grid,Text,Center} from "@mantine/core"
 import supabase from '../lib/db'
 import {SpinampProvider, useAllTracksQuery} from "@spinamp/spinamp-hooks";
 import { useState,useEffect } from 'react';
-import { Player } from '../components/Player';
-
+import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi'
+ 
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
+ 
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { ConnectKitProvider, ConnectKitButton, getDefaultClient } from "connectkit";
+import { Profile } from '../components/Profile';
+// Configure chains & providers with the Alchemy provider.
+// Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
+const { chains, provider, webSocketProvider } = configureChains(
+  [mainnet],
+  [alchemyProvider({ apiKey: 'bLQe7fWCbnw_Ojjyviip3VD80MOmyW-q' }), publicProvider()],
+)
+ 
+// Set up client
+const client = createClient({
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({ chains }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: 'wagmi',
+      },
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        qrcode: true,
+      },
+    }),
+  ],
+  provider,
+  webSocketProvider,
+})
 export default function App({ Component, pageProps }: AppProps) {
   const [mood,setMood] = useState({color: 'white',description: "Figuring out what the mood is 😀"})
+  
   const getMood = async () => {
     const {data,error} = await supabase
   .from('mood')
@@ -20,17 +58,13 @@ export default function App({ Component, pageProps }: AppProps) {
     } 
   }
   }
+  
 useEffect(()=> {
-  getMood()
-  const channel = supabase.channel('schema-db-changes')
-  .on('broadcast', { event: 'mood-update' }, async (payload) => {
-    await getMood()
-  })
-  channel.subscribe((msg) => {
-    console.log("MSG",msg)
-  })
+ 
 },[])
   return (
+    <WagmiConfig client={client}>
+       <ConnectKitProvider>
   <MantineProvider
         withGlobalStyles
         withNormalizeCSS
@@ -40,11 +74,10 @@ useEffect(()=> {
         <Stack style={{ overflowX: "hidden" }} justify="center">
        
 
-      
-      <Grid>
-        <Grid.Col span={2}> <Player/>  </Grid.Col>
-       <Grid.Col  span={8}><Text size="lg" weight={700} align="center" mt={5} >Zencaster</Text> <Text align="center">The current vibe of Farcaster: {mood.description}</Text></Grid.Col>
-      </Grid>
+      <Center mt="md">     <Profile /></Center>
+
+
+
   
      
 
@@ -52,6 +85,9 @@ useEffect(()=> {
    <Component {...pageProps} />
    </Stack>
    </SpinampProvider>
+   
   </MantineProvider>
+  </ConnectKitProvider>
+   </WagmiConfig>
   )
 }

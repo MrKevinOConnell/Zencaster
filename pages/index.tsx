@@ -3,19 +3,38 @@ import Image from 'next/image'
 import supabase from '../lib/db'
 import { useState ,useEffect} from 'react'
 import { Post } from '../components/Post'
-import { Stack } from '@mantine/core'
+import { Stack ,Text,Center} from '@mantine/core'
+import { usePrivy } from '@privy-io/react-auth'
+import {
+  useEnsAvatar,
+  useEnsName,
+} from 'wagmi'
+import { Profile } from '../components/Profile'
+import { useStore } from '../store'
 export default function Home() {
+  const { user,setUser } = useStore((state) => state);
+  const [signedInUser,setSignedInUser] = useState(user)
+
+  useEffect(() => {
+    if(user) {
+      setSignedInUser(user)
+    }
+  },[user])
+
   const getCasts = async () => {
   
-    const casts = await supabase
+    let casts = await supabase
   .from('casts')
   .select()
-  .is("parent_hash", null)
-  .or('text.not.ilike./@([a-zA-Z0-9_]+)/g')
+  .contains("mentions", JSON.stringify([{ username: "unlonely" }]))
   .eq('deleted', false)
   .order('published_at', { ascending: false })
+  .limit(10000)
+
+  console.log('casts',casts.data)
   setCasts(casts.data)
   }
+  
   const [casts,setCasts] = useState(null as any)
   useEffect(()=> {
     getCasts()
@@ -31,12 +50,8 @@ export default function Home() {
   return
   return (
     <Stack justify="center" align="center">
-    {casts && casts.map((cast: any, index: number) => {
-      return(<Post key={index} cast={cast}/>)
-    })}
-
-     
-
+   {signedInUser && <Center><Text>{signedInUser.displayName
+} SIGNED IN</Text></Center>}
 </Stack>
   )
 }
