@@ -33,6 +33,7 @@ const client = createClient({
       chains,
       options: {
         appName: 'wagmi',
+        headlessMode: true
       },
     }),
     new WalletConnectConnector({
