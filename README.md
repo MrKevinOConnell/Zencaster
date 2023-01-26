@@ -6,5 +6,5 @@ Some notes: [here](https://github.com/MrKevinOConnell/Zencaster/blob/main/pages/
 
 [here](https://github.com/MrKevinOConnell/Zencaster/blob/main/components/Profile.tsx) is where the custody bearer token is generated and the call to the above api endpoint is made.
 
-from here if the wallet signed in is a farcaster custody address the profile will change to the user's profile picture and their profile name.
+if the wallet signed in is a farcaster custody address the profile will change to the user's profile picture and their profile name.
 
